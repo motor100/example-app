@@ -21,6 +21,7 @@ class CreateLink extends CreateRecord
 
         // Сейчас ссылка вида "http://domain.com/abc123" и эта строка вставляется в таблицу links колонка short_link
         // Можно оптимизировать и вставлять в колонку short_link только "abc123"
+        // Цель - уменьшение объема данных в БД
         $data['short_link'] = $short_link;
 
         // User ID
