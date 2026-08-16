@@ -23,6 +23,8 @@ class BookController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * 
+     * Создать StoreBookRequest при создании поля обычно обязательны
      */
     public function store(BookRequest $request)
     {
@@ -59,6 +61,8 @@ class BookController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * 
+     * Создать UpdateBookRequest при обновлении поля обычно необязательны
      */
     public function update(BookRequest $request, Book $book)
     {
