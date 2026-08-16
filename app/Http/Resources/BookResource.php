@@ -21,6 +21,11 @@ class BookResource extends JsonResource
             'image' => $this->image,
             'description' => $this->description,
             'created_at'  => $this->created_at->toIso8601String(),
+
+            'category'    => [
+                'id'   => $this->category?->id,
+                'title' => $this->category?->title,
+            ],
         ];
     }
 }

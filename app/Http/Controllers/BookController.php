@@ -13,9 +13,40 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::all();
+        //$books = Book::all(); // Метод all() без связи через отношения
+
+        // Метод with(['category']) делает "жадную загрузку"
+        // Вместо сотен запросов Laravel сделает всего ДВА: один за книгами, второй за всеми нужными категориями сразу!
+        // $books = Book::with('category')->get(); // Получить все записи
+        //$books = Book::with('category')->paginate(2);
+
+        // Фильтрация
+
+        $perPage = intval($request->query('per_page', 15));
+        if ($perPage > 100) { $perPage = 100; }
+
+        // 1. Вместо ->get() или ->paginate() начинаем строить запрос через ::query()
+        $query = Book::with(['category']);
+
+        // 2. Фильтр по автору: если в GET-запросе есть ?author=..., применяем условие
+        $query->when($request->query('author'), function ($q, $author) {
+            return $q->where('author', 'like', "%{$author}%");
+        });
+
+        // 3. Поиск по названию: если в GET-запросе есть ?search=..., ищем по title
+        $query->when($request->query('search'), function ($q, $search) {
+            return $q->where('title', 'like', "%{$search}%");
+        });
+
+        // 4. Фильтр по ID категории: если прислали ?category_id=...
+        $query->when($request->query('category_id'), function ($q, $categoryId) {
+            return $q->where('category_id', $categoryId);
+        });
+
+        // 5. В самом конце выполняем пагинацию на основе собранного запроса
+        $books = $query->paginate($perPage);
 
         /*
         return response()->json([
@@ -23,6 +54,7 @@ class BookController extends Controller
                     'data' => $books
                 ], 200);
         */
+                
         // Заменяю стандартый ответ на BookResource
         return BookResource::collection($books);
     }
