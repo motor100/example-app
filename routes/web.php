@@ -9,3 +9,6 @@ Route::get('/', function () {
 
 // Route для редиректа
 Route::get('/abc{model}', [MainController::class, 'link_redirect']);
+
+// Тестирование замыканий callback/closure
+Route::get('/callback', [MainController::class, 'callback']);

@@ -24,4 +24,34 @@ class MainController extends Controller
 
         return redirect($model->long_link);
     }
+
+    public function callback()
+    {
+        // 1. Задаем исходный массив чисел
+        $inputData = [1,2,3,4,5];    
+    
+        // 2. Вызываем глобальную функцию, передавая в неё замыкание (алгоритм)
+        $processedData = processNumbers($inputData, function($num) {
+            return $num * 5; // Наша инструкция: умножь каждое число на 5
+        });
+
+        // 3. Выводим результат в логи Laravel (storage/logs/laravel.log) для проверки
+        info($processedData); 
+        // В логе появится массив: [50, 100, 150]
+
+
+        // Моя функция
+        $prices = [100, 200, 300, 400, 500];
+
+        /**
+         * Первый параметр это массив $prices
+         * Второй параметр это функция которую написал прям тут в момент вызова функции filterPrices()
+         */
+
+        $filteredPrice = filterPrices($prices, function($price) {
+            return $price < 300 ? true : false;
+        });
+
+        info($filteredPrice); 
+    }
 }
