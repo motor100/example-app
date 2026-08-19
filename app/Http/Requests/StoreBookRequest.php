@@ -24,6 +24,8 @@ class StoreBookRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // Новое правило (rules) exists:categories,id. Нужно только тут, т.к. речь идет про внешний ключ
+            'category_id' => 'required|integer|exists:categories,id', // Проверит, что категория с таким id вообще существует в базе
             'title' => 'required|min:3|max:255',
             'author' => 'required|min:3|max:255',
             //'image' => 'nullable|min:3|max:255', // это обычный текст

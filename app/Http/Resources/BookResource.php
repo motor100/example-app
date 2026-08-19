@@ -23,6 +23,11 @@ class BookResource extends JsonResource
             'created_at'  => $this->created_at->toIso8601String(),
 
             'category'    => [
+                /**
+                 * 'id' => $this->category?->id
+                 * Это спасет твой API от критической ошибки Attempt to read property "id" on null, если у какой-то книги в базе случайно сотрется или не укажется категория.
+                 * Отличная подстраховка!
+                 */
                 'id'   => $this->category?->id,
                 'title' => $this->category?->title,
             ],

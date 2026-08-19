@@ -28,9 +28,20 @@ class BookController extends Controller
         if ($perPage > 100) { $perPage = 100; }
 
         // 1. Вместо ->get() или ->paginate() начинаем строить запрос через ::query()
+        /**
+         * С with(['category']) Laravel делает ровно 2 запроса: SELECT * FROM books и SELECT * FROM categories WHERE id IN (...). 
+         * Нагрузка на базу падает до минимума
+         */
+
         $query = Book::with(['category']);
 
         // 2. Фильтр по автору: если в GET-запросе есть ?author=..., применяем условие
+
+        /** 
+         * Эта конструкция во много раз лучше, чем классические громоздкие if ($request->has(...)). 
+         * Метод when() выполняет замыкание (callback) только тогда, когда первый параметр возвращает true (то есть когда в GET-запросе реально прислали этот фильтр). 
+         * Если параметра нет, Laravel просто пропускает этот кусок, не ломая цепочку SQL-запроса
+        */
         $query->when($request->query('author'), function ($q, $author) {
             return $q->where('author', 'like', "%{$author}%");
         });
@@ -67,13 +78,26 @@ class BookController extends Controller
     public function store(StoreBookRequest $request)
     {
         $validated = $request->validated();
+        // Laravel возвращает массив только тех полей, которые прошли валидацию
 
+        // Мой обычный способ заполнения полей для создания/обновления модели
+        /*
         $book = Book::create([
+            // Тут еще нужно заполнить 'category_id'
             'title' => $validated['title'],
             'author' => $validated['author'],
             'image' => $validated['image'],
             'description' => $validated['description'],
         ]);
+        */
+
+        // Новый и улучшенный способ заполнения полей для создания/обновления модели
+        /**
+         * Важное правило
+         * $validated должен быть отвалидирован через Request или $request->validate()
+         */
+
+        $book = Book::create($validated);
 
         /* Конструкция if ($book) после Book::create(...) почти всегда избыточна. 
         Если Eloquent не сможет создать запись (например, упадет база), 
@@ -118,12 +142,25 @@ class BookController extends Controller
     public function update(UpdateBookRequest $request, Book $book)
     {
         $validated = $request->validated();
+        // Laravel возвращает массив только тех полей, которые прошли валидацию
 
+        // Мой обычный способ заполнения полей для создания/обновления модели
+        /*
         $book->update([
+            // Тут еще нужно заполнить 'category_id'
             'title' => $validated['title'],
             'image' => $validated['image'],
             'description' => $validated['description'],
         ]);
+        */
+
+        // Новый и улучшенный способ заполнения полей для создания/обновления модели
+        /**
+         * Важное правило
+         * $validated должен быть отвалидирован через Request или $request->validate()
+         */
+
+        $book->update($validated);
 
         // Заменяю стандартый ответ на BookResource
         /*
