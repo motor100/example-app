@@ -54,4 +54,47 @@ class MainController extends Controller
 
         info($filteredPrice); 
     }
+
+    public function callback2()
+    {
+        // Массив с числами
+        $numbers = [1, 2, 3, 4, 5];    
+
+        $evenNumbers = filterArray($numbers, function($number) {
+
+            // Для проверки четного числа использую остаток от деления. Если число четное, результат будет равен нулю
+            return $number % 2 == 0; // Это сокращенная запись от ($number % 2) ? true : false 
+        });
+
+        // Вывожу результат в лог Laravel (storage/logs/laravel.log) для проверки
+        info($evenNumbers); 
+    }
+
+    public function callback3()
+    {   
+        /**
+         * Это выражение присваивает переменной $sayHello анонимную функцию function($name) { return "$greeting, $name!"; }
+         * 
+         * Похоже на функциональное выражение, но плюс еще переменная $greeting из родительской функции createGreeter()
+         * $sayHello = function($name) { return $name; }
+         */ 
+        $sayHello = createGreeter("Привет");
+
+        // Laravel dd() показывает что $sayHello это Closure($name)
+        echo $sayHello("Алексей"); // VS Code подсказывает параметр $name при вызове функции $sayHello()
+    }
+
+    public function callback4()
+    {
+        $counter = createCounter();
+
+        $counterB = createCounter();
+
+        echo $counter();
+        echo $counter();
+        echo $counter();
+
+        echo $counterB();
+        echo $counterB();
+    }
 }
